@@ -6,7 +6,9 @@ import requests
 
 
 # basic url and code I learnt from: https://www.youtube.com/watch?v=7JoMTQgdxg0&ab_channel=teachmesome
-url = 'http://api.openweathermap.org/data/2.5/weather?q={}&appid={}'
+# urlfr has "&lang=fr" to change to API to collect the information in french
+url = 'http://api.openweathermap.org/data/2.5/weather?q={}&appid={}&lang=en'
+urlfr = 'http://api.openweathermap.org/data/2.5/weather?q={}&appid={}&lang=fr' #mycode
 
 # a file to retrieve the API and code I learnt from: https://www.youtube.com/watch?v=7JoMTQgdxg0&ab_channel=teachmesome
 # the weather API is from: https://openweathermap.org/api
@@ -21,6 +23,8 @@ api_key = config['api_key']['key']
 # were description, timezone, adjusted_timezone to add my own new found knowledge
 
 
+
+
 def get_weather(city):
     result = requests.get(url.format(city, api_key))
     if result:
@@ -31,13 +35,33 @@ def get_weather(city):
         temp_kelvin = json['main']['temp']
         temp_celsius = temp_kelvin - 273.15
         temp_fahrenheit = (temp_kelvin - 273.15) * 9 / 5 + 32
-        icon = json['weather'][0]['icon']
         weather = json['weather'][0]['main']
         description = json['weather'][0]['description'] #mycode
         timezone = json['timezone'] #mycode
         adjusted_timezone = timezone / 3600 #mycode
-        final = (city, country, temp_celsius, temp_fahrenheit, icon, weather, description, adjusted_timezone)
-        return final
+        final = (city, country, temp_celsius, temp_fahrenheit, weather, description, adjusted_timezone)
+        return final        
+    else:
+        return None
+
+# picks up the information from the api in french
+# only change is in line 50 from line 29
+def get_weather_fr(city):
+    result = requests.get(urlfr.format(city, api_key))
+    if result:
+        json = result.json()
+        # (City, Country, temp_celsius, temp_fahrenheit, icon, weather, description, adjusted_timezone)
+        city = json['name']
+        country = json['sys']['country']
+        temp_kelvin = json['main']['temp']
+        temp_celsius = temp_kelvin - 273.15
+        temp_fahrenheit = (temp_kelvin - 273.15) * 9 / 5 + 32
+        weather = json['weather'][0]['main']
+        description = json['weather'][0]['description'] #mycode
+        timezone = json['timezone'] #mycode
+        adjusted_timezone = timezone / 3600 #mycode
+        final = (city, country, temp_celsius, temp_fahrenheit, weather, description, adjusted_timezone)
+        return final        
     else:
         return None
 
@@ -55,6 +79,7 @@ def get_weather(city):
 # most of the code is from: https://www.youtube.com/watch?v=7JoMTQgdxg0&ab_channel=teachmesome
 # the code unique (my code) from below is the added space to solve issue described above and
 # timezone_lbl to display the timezone in UTC with the offset in hours
+# the code is repeated in line 94 except it is search_fr and the function get_weather_fr picks up the urlfr instead of url
 
 
 def search():
@@ -63,13 +88,24 @@ def search():
     if weather:
         location_lbl['text'] = '               {}, {}               '.format(weather[0], weather[1])
         temp_lbl['text'] = '{:.2f}\u2103, {:.2f}\u2109'.format(weather[2], weather[3])
-        weather_lbl['text'] = weather[5]
-        description_lbl['text'] = '     Description / Descriptif: {}        '.format(weather[6])
-        timezone_lbl1['text'] = 'Universal Time zone offset by {} hours'.format(weather[7])
-        timezone_lbl['text'] = 'Fuseau horaire universel décalé de {} heures'.format(weather[7])
-
+        weather_lbl['text'] = weather[4]
+        description_lbl['text'] = '     Description: {}        '.format(weather[5])
+        timezone_lbl['text'] = 'Universal time zone offset by {} hours'.format(weather[6], weather [6])
     else:
         messagebox.showerror('Error', 'Cannot find city {}'.format(city))
+
+def search_fr():
+    city = city_text.get()
+    weather = get_weather_fr(city)
+    if weather:
+        location_lbl['text'] = '               {}, {}               '.format(weather[0], weather[1])
+        temp_lbl['text'] = '{:.2f}\u2103, {:.2f}\u2109'.format(weather[2], weather[3])
+        weather_lbl['text'] = weather[4]
+        description_lbl['text'] = '     Descriptif: {}        '.format(weather[5])
+        timezone_lbl['text'] = 'D�calage du fuseau horaire universel de {} heures'.format(weather[6])
+    else:
+        messagebox.showerror('Error', 'Cannot find city {}'.format(city))
+
 
 #this code is from: https://www.youtube.com/watch?v=7JoMTQgdxg0&ab_channel=teachmesome
 # I learnt this from a previous group project, Rock Paper Scissors as well
@@ -94,8 +130,12 @@ city_entry = Entry(app, textvariable=city_text)
 city_entry.pack()
 
 # search button which allows you to enter the string for the lines 96-101 above
-search_btn = Button(app, text='Search / Cherche ', width=12, command=search, bg='white')
+search_btn = Button(app, text='Search', width=12, command=search, bg='white')
 search_btn.pack()
+
+# the search button but in french
+search_btn_fr = Button(app, text=' Cherche', width=12, command=search_fr, bg='white')
+search_btn_fr.pack()
 
 # location and country
 location_lbl = Label(app, text='', font=('bold', 20), bg='white')
@@ -115,8 +155,8 @@ description_lbl.pack()
 timezone_lbl = Label(app, text='', bg='white')
 timezone_lbl.pack()
 
-timezone_lbl1 = Label(app, text='', bg='white')
-timezone_lbl1.pack()
+french_description = Label (app, text='', bg='white')
+french_description.pack()
 
 #this allows the window to loop in this certain window and close it off
 #this is essential for the GUI
