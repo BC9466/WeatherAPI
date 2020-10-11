@@ -102,7 +102,7 @@ def search_fr():
         temp_lbl['text'] = '{:.2f}\u2103, {:.2f}\u2109'.format(weather[2], weather[3])
         weather_lbl['text'] = weather[4]
         description_lbl['text'] = '     Descriptif: {}        '.format(weather[5])
-        timezone_lbl['text'] = 'Décalage du fuseau horaire universel de {} heures'.format(weather[6])
+        timezone_lbl['text'] = 'DÃ©calage du fuseau horaire universel de {} heures'.format(weather[6])
     else:
         messagebox.showerror('Error', 'Cannot find city {}'.format(city))
 
@@ -141,22 +141,21 @@ search_btn_fr.pack()
 location_lbl = Label(app, text='', font=('bold', 20), bg='white')
 location_lbl.pack()
 
-# image
-
+# temperature
 temp_lbl = Label(app, text='', bg='white')
 temp_lbl.pack()
 
+# weather in general
 weather_lbl = Label(app, text='', bg='white')
 weather_lbl.pack()
 
+# weather description
 description_lbl = Label(app, text='', bg='white')
 description_lbl.pack()
 
+# timezone
 timezone_lbl = Label(app, text='', bg='white')
 timezone_lbl.pack()
-
-french_description = Label (app, text='', bg='white')
-french_description.pack()
 
 #this allows the window to loop in this certain window and close it off
 #this is essential for the GUI
