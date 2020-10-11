@@ -1,3 +1,5 @@
 REQUIREMENTS
 
 config.ini requires an API code from https://openweathermap.org/api , which can be obtained for free when you sign up, in order for the python program to work!
+
+have the config.ini file and the weather.py in the same directory
